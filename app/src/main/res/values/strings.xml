@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">MatterNote</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_addsql">addsql</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="edit_text_hint">Start here</string>
+
+    <string name="dummytext">There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text.
+    There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text.
+    There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text.
+    There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text.
+    There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text.
+    There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text.
+    There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text.
+    </string>
+</resources>

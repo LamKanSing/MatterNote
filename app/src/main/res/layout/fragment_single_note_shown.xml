@@ -1,0 +1,67 @@
+<RelativeLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/rootscence"
+            tools:context="com.lamkansing.matternote.SingleNoteFragment">
+
+<!-- Title section, set height by code for Ratio keylines -->
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="150dp"
+        android:background="@color/primary"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/frameLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+
+
+            android:text="Large Text"
+            android:id="@+id/title"
+            android:layout_marginLeft="@dimen/content_left_margin"
+            android:layout_gravity="left|bottom" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/frameLayout"
+        android:id="@+id/lowerframelayout"
+        android:paddingLeft="@dimen/list_left_right_margin"
+        android:paddingRight="@dimen/list_left_right_margin"
+        android:layout_centerHorizontal="true">
+
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="@string/dummytext"
+
+            android:textSize="21sp"
+            android:scrollbars="vertical"
+            android:lineSpacingMultiplier="1.5"
+            android:id="@+id/textView"
+
+            />
+
+        <EditText
+            android:id="@+id/editText1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:text="testingtestingtestingtestingtestingtestingtesting"
+            android:lineSpacingMultiplier="1.5"
+            android:hint="@string/edit_text_hint"
+            android:gravity="left|top"
+            android:visibility="gone"
+            android:inputType="textMultiLine" >
+            <requestFocus />
+        </EditText>
+    </FrameLayout>
+</RelativeLayout>
+

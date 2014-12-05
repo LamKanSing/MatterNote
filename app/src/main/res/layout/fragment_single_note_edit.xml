@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootscence"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="10dp"
+        android:background="@color/primary"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+
+        android:id="@+id/frameLayout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+
+
+            android:text="Large Text"
+            android:id="@+id/title"
+            android:layout_marginLeft="@dimen/content_left_margin"
+            android:layout_gravity="left|bottom" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/lowerframelayout"
+        android:id="@+id/lowerframelayout"
+        android:layout_centerHorizontal="true">
+
+        <EditText
+            android:id="@+id/editText1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:text="testingtestingtestingtestingtestingtestingtesting"
+            android:lineSpacingMultiplier="1.5"
+            android:hint="@string/edit_text_hint"
+            android:gravity="left|top"
+            android:inputType="textMultiLine" >
+
+
+            <requestFocus />
+        </EditText>
+    </FrameLayout>
+</RelativeLayout>
