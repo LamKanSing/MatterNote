@@ -2,6 +2,7 @@ package com.lamkansing.matternote;
 
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -17,6 +18,12 @@ import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.melnykov.fab.*;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 /**
@@ -37,12 +44,14 @@ public class SingleNoteFragment extends Fragment {
     private int notebookColor;
     String dateTime;
 
+
     // state the fragment at VIEW mode or EDIT mode
     private String editViewMode= "view";
 
-    TextView textview1, titleView;
+    TextView showView, textview1, titleView;
+    FloatingActionButton fab;
 
-    View showView, square;
+    View  square;
     EditText editView;
 
     /**
@@ -51,10 +60,11 @@ public class SingleNoteFragment extends Fragment {
      *
      * @return A new instance of fragment SingleNoteFragment.
      */
-    public static SingleNoteFragment newInstance(String noteid) {
+    public static SingleNoteFragment newInstance(String noteid, boolean newnote) {
         SingleNoteFragment fragment = new SingleNoteFragment();
         Bundle args = new Bundle();
         args.putString("noteid", noteid);
+        args.putBoolean("newnote", newnote);
 
         fragment.setArguments(args);
         return fragment;
@@ -80,15 +90,18 @@ public class SingleNoteFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_single_note_shown_1, container, false);
         mSceneRoot = (ViewGroup) rootView.findViewById(R.id.rootscence);
-        showView = mSceneRoot.findViewById(R.id.textView);
+        showView = (TextView)mSceneRoot.findViewById(R.id.textView);
         editView = (EditText)mSceneRoot.findViewById(R.id.editText1);
         square = mSceneRoot.findViewById(R.id.frameLayout);
         titleView = (TextView)rootView.findViewById(R.id.title);
+        fab = (FloatingActionButton)rootView.findViewById(R.id.fab);
         mScene2 = Scene.getSceneForLayout(mSceneRoot, R.layout.fragment_single_note_edit, getActivity());
+
 
         textview1 = (TextView)rootView.findViewById(R.id.textView);
         textview1.setMovementMethod(new ScrollingMovementMethod());
-        Log.d(TAG_NAME, "hello world");
+
+
 
         // set the noteid, mode and text-note-save on saveedInstanceState
         if (savedInstanceState!=null){
@@ -112,9 +125,7 @@ public class SingleNoteFragment extends Fragment {
             @Override
             public boolean onLongClick(View v) {
 
-
                 turnEditMode();
-
 
                 return true;
 
@@ -140,7 +151,53 @@ public class SingleNoteFragment extends Fragment {
             }
         });
 
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                Log.d("matternote", "click catch");
+
+                if (editView.getVisibility() == View.VISIBLE){
+                    String textToSave = editView.getText().toString();
+                    NotebookDBHelper databaseHelper = new NotebookDBHelper(getActivity());
+                    database = databaseHelper.getWritableDatabase();
+
+                    String noteid = getArguments().getString("noteid", "1");
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date date = new Date();
+
+                    if (getArguments().getBoolean("newnote")){
+                        // the note is a new created note, do inset
+                    }else {
+                        // the note already exist, do update
+                        ContentValues values = new ContentValues();
+                        values.put(NotebookDBHelper.COLUMN_NOTE_CONTENT,textToSave);
+                        values.put(NotebookDBHelper.COLUMN_LASTEDIT, dateFormat.format(date));
+
+                        String selection = NotebookDBHelper.COLUMN_ID + " LIKE ?";
+                        String[] selectionArgs = { noteid };
+
+                        int count = database.update(
+                                NotebookDBHelper.TABLE_NAME,
+                                values,
+                                selection,
+                                selectionArgs);
+
+                        // todo i cannot see the log and toast, what happen??
+                        // but the text is saveed, ???
+                        Log.d("matternote", "the count is " + count);
+
+                        if (count == 1){
+                            Toast.makeText(getActivity(),"Note Saved", Toast.LENGTH_LONG);
+                        }else {
+                            Toast.makeText(getActivity(),"Something Wrong", Toast.LENGTH_LONG);
+                        }
+
+                    }
+
+                }
+            }
+        });
         
 
 
@@ -182,9 +239,12 @@ public class SingleNoteFragment extends Fragment {
         params.height = newSize;
         square.setLayoutParams(params);
 
-        showView.setVisibility(View.GONE);
+        String text = showView.getText().toString();
+        editView.setText(text);
 
+        showView.setVisibility(View.GONE);
         editView.setVisibility(View.VISIBLE);
+        fab.setVisibility(View.VISIBLE);
 
     }
 
