@@ -25,11 +25,14 @@ public class Notebooks extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notebooks);
         if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.container, NoteListFragment.newInstance("testing title")).commit();
 
+            /*
             // todo dumy note id
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, SingleNoteFragment.newInstance("1"))
-                    .commit();
+                    .add(R.id.container, SingleNoteFragment.newInstance("1", false))
+                    .commit();*/
         }
 
         getActionBar().setDisplayShowHomeEnabled(true);

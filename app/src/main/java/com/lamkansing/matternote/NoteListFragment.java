@@ -3,12 +3,14 @@ package com.lamkansing.matternote;
 
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.provider.ContactsContract;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,12 +85,22 @@ public class NoteListFragment extends Fragment {
                 // clear the actionbar title
                 getActivity().getActionBar().setTitle("");
 
+                setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_image_transform));
+                setExitTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.explode));
+                view.setTransitionName("testing");
+
                 TextView textview = (TextView)view.findViewById(R.id.listtiemnoteid);
                 String noteid = textview.getText().toString();
 
+                Fragment fragment = SingleNoteFragment.newInstance(noteid, false);
+                fragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_image_transform));
+                fragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.explode));
+
+
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.replace(R.id.container, SingleNoteFragment.newInstance(noteid, false));
+                transaction.replace(R.id.container, fragment);
                 transaction.addToBackStack(null);
+                transaction.addSharedElement(view, "testing");
                 // Commit the transaction
                 transaction.commit();
 
@@ -183,4 +195,32 @@ public class NoteListFragment extends Fragment {
 
         return mCursor;
     }
+
+    /*
+    private class SharedElementCursorAdapter extends SimpleCursorAdapter {
+        public SharedElementCursorAdapter(Context context, int layout, Cursor c, String[] from,
+                              int[] to) {
+            super(context, layout, c, from, to);
+
+        }
+        public void setViewText(TextView v, String text) {
+            v.setText(text);
+        }
+
+
+    }*/
+
+    /*
+    private class TransitionViewBinder implements SimpleCursorAdapter.ViewBinder{
+
+        @Override
+        public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+            String text = cursor.getString(from[i]);
+
+
+            return true;
+        }
+    }*/
 }
+
+
