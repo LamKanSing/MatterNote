@@ -3,10 +3,15 @@ package com.lamkansing.matternote;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.transition.Slide;
+import android.transition.TransitionInflater;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,25 +23,32 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class Notebooks extends Activity {
+public class Notebooks extends Activity implements InputNotebookNameDialogFragment.NoticeDialogListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notebooks);
-        if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.container, NoteListFragment.newInstance("testing title")).commit();
 
-            /*
-            // todo dumy note id
+        if (getFragmentManager().findFragmentById(R.id.container) == null){
+            Fragment fragment = NotebookFragment.newInstance();
+
+            //todo think about the design, tell the user you are viewing the notebook/ list of note / single detail note...
+
+            // todo you better create an enter anim once the app on create
+            // the following don't work too
+            //fragment.setEnterTransition(TransitionInflater.from(this).inflateTransition(android.R.transition.slide_bottom));
+
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, SingleNoteFragment.newInstance("1", false))
-                    .commit();*/
+                    .add(R.id.container, fragment).commit();
         }
 
+
+
+
         getActionBar().setDisplayShowHomeEnabled(true);
-        getActionBar().setLogo(R.drawable.ic_action_addsql);
+        // todo you need a new icon
+        getActionBar().setLogo(R.drawable.ic_action_setting);
         getActionBar().setDisplayUseLogoEnabled(true);
 
     }
@@ -59,31 +71,50 @@ public class Notebooks extends Activity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
-        }else if (id == R.id.action_addsql){
-            NotebookDBHelper databaseHelper = new NotebookDBHelper(this);
-            SQLiteDatabase database = databaseHelper.getWritableDatabase();
-
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = new Date();
-
-            ContentValues values = new ContentValues();
-            values.put(NotebookDBHelper.COLUMN_COVER_COLOR, 1);
-            values.put(NotebookDBHelper.COLUMN_NOTEBOOK_NAME,"testing title");
-            values.put(NotebookDBHelper.COLUMN_NOTE_CONTENT,"testing content");
-            values.put(NotebookDBHelper.COLUMN_LASTEDIT, dateFormat.format(date));
-            long newRowId;
-            newRowId = database.insert(
-                    NotebookDBHelper.TABLE_NAME,
-                    null,
-                    values);
-
-            Log.d("matternote", "new row id" + newRowId);
-
-            return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onDialogPositiveClick(String notebookName){
+        //  pass directly to the singlenotefragment to make new note...
+        long newRowId = addNewNoteList(notebookName);
+
+        //
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, SingleNoteFragment.newInstance(Long.toString(newRowId), true));
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    long addNewNoteList(String newNotebookName){
+        // add a new empty note to the db
+        SQLiteOpenHelper mDbHelper = new NotebookDBHelper(this);
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(NotebookDBHelper.COLUMN_NOTE_CONTENT,"");
+        values.put(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, newNotebookName);
+        values.put(NotebookDBHelper.COLUMN_COVER_COLOR, 1);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+
+        values.put(NotebookDBHelper.COLUMN_LASTEDIT, dateFormat.format(date));
+
+        long newRowId;
+        newRowId = db.insert(
+                NotebookDBHelper.TABLE_NAME,
+                null,
+                values);
+
+        Log.d("matternote", "new row id" + newRowId);
+
+        if (db!=null)
+            db.close();
+
+        return newRowId;
+    }
 
 }

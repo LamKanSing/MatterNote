@@ -15,4 +15,6 @@
     <item name="primary" type="color">#FFFF4444</item>
     <item name="primary_dark" type="color">#FFCC0000</item>
     <item name="accent" type="color">#FF99CC00</item>
+
+    <item name="ripple" type="color">#FFFFFFFF</item>
 </resources>

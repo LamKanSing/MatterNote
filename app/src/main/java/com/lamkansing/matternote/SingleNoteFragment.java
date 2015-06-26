@@ -86,11 +86,14 @@ public class SingleNoteFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setRetainInstance(true);
+
+        getActivity().getActionBar().setTitle("");
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_single_note_shown_1, container, false);
         mSceneRoot = (ViewGroup) rootView.findViewById(R.id.rootscence);
-        showView = (TextView)mSceneRoot.findViewById(R.id.textView);
+        showView = (TextView)mSceneRoot.findViewById(R.id.showview);
         editView = (EditText)mSceneRoot.findViewById(R.id.editText1);
         square = mSceneRoot.findViewById(R.id.frameLayout);
         titleView = (TextView)rootView.findViewById(R.id.title);
@@ -98,8 +101,8 @@ public class SingleNoteFragment extends Fragment {
         mScene2 = Scene.getSceneForLayout(mSceneRoot, R.layout.fragment_single_note_edit, getActivity());
 
 
-        textview1 = (TextView)rootView.findViewById(R.id.textView);
-        textview1.setMovementMethod(new ScrollingMovementMethod());
+        //textview1 = (TextView)rootView.findViewById(R.id.textView);
+        showView.setMovementMethod(new ScrollingMovementMethod());
 
 
 
@@ -107,21 +110,13 @@ public class SingleNoteFragment extends Fragment {
         if (savedInstanceState!=null){
             String mode = savedInstanceState.getString("editViewMode", "something wrong");
 
-
             if (mode.equals("edit")){
-                String getText = savedInstanceState.getString("editTextText", "something wrong");
-                if (! getText.equals("something wrong")){
-                    editView.setText(getText);
-                    turnEditMode();
-                }
-            }else {
-                // view mode, to nothing....
+                turnEditMode();
+
             }
         }
 
-
-
-        textview1.setOnLongClickListener(new View.OnLongClickListener() {
+        showView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
 
@@ -132,10 +127,9 @@ public class SingleNoteFragment extends Fragment {
             }
         });
 
-
-
         // todo the scroll don't work stable on emsumlater, check it at real devcies
-        textview1.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+        showView.getViewTreeObserver().addOnScrollChangedListener(
+                new ViewTreeObserver.OnScrollChangedListener() {
             @Override
             public void onScrollChanged() {
                 Log.d(TAG_NAME, "on scroll changed");
@@ -166,10 +160,8 @@ public class SingleNoteFragment extends Fragment {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = new Date();
 
-                    if (getArguments().getBoolean("newnote")){
-                        // the note is a new created note, do inset
-                    }else {
-                        // the note already exist, do update
+
+                        // the note already exist, update note content
                         ContentValues values = new ContentValues();
                         values.put(NotebookDBHelper.COLUMN_NOTE_CONTENT,textToSave);
                         values.put(NotebookDBHelper.COLUMN_LASTEDIT, dateFormat.format(date));
@@ -183,22 +175,20 @@ public class SingleNoteFragment extends Fragment {
                                 selection,
                                 selectionArgs);
 
-                        // todo i cannot see the log and toast, what happen??
-                        // but the text is saveed, ???
                         Log.d("matternote", "the count is " + count);
 
                         if (count == 1){
-                            Toast.makeText(getActivity(),"Note Saved", Toast.LENGTH_LONG);
+                            Toast.makeText(getActivity(),R.string.toast_note_updated, Toast.LENGTH_LONG).show();
                         }else {
-                            Toast.makeText(getActivity(),"Something Wrong", Toast.LENGTH_LONG);
+                            Toast.makeText(getActivity(),R.string.toast_note_update_error, Toast.LENGTH_LONG).show();
                         }
-
                     }
-
-                }
             }
         });
-        
+
+        loadDB();
+        showView.setText(noteContent);
+        titleView.setText(noteTitle);
 
 
         return rootView;
@@ -209,25 +199,34 @@ public class SingleNoteFragment extends Fragment {
         super.onSaveInstanceState(outState);
         if (editView.getVisibility() == View.VISIBLE){
             outState.putString("editViewMode", "edit");
-            outState.putString("editTextText", editView.getText().toString());
-
         }else {
             outState.putString("editViewMode", "view");
         }
+
+        String noteid = getArguments().getString("noteid", "1");
+        outState.putString("noteid", noteid);
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        loadDB();
+    public void onResume() {
+        super.onResume();
 
-        textview1.setText(noteContent);
-        titleView.setText(noteTitle);
+        if (getArguments().getBoolean("newnote")) {
+            turnEditMode();
+        }
+
+    }
+
+    @Override
+    public void onPause() {
+        if (database!=null)
+            database.close();
+        super.onPause();
     }
 
     void turnEditMode(){
         Activity mActivity = getActivity();
-        if (mActivity!=null){
+        if (mActivity!=null && mActivity.getActionBar() !=null){
             mActivity.getActionBar().setTitle(noteTitle);
         }
 

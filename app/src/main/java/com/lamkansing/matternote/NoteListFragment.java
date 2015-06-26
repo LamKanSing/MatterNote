@@ -38,7 +38,7 @@ public class NoteListFragment extends Fragment {
 
     private String notebookTitle;
     Cursor mCursor;
-    ListAdapter adapter;
+    SQLiteDatabase db;
     ListView mListView;
     FloatingActionButton fab;
 
@@ -73,6 +73,11 @@ public class NoteListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setRetainInstance(true);
+
+        if (getActivity()!=null && getActivity().getActionBar()!=null)
+            getActivity().getActionBar().setTitle(getArguments().getString(ARG_NOTEBOOKTITLE));
+
         View rootView = inflater.inflate(R.layout.fragment_note_list, container, false);
 
         mListView = (ListView)rootView.findViewById(R.id.listView);
@@ -81,77 +86,36 @@ public class NoteListFragment extends Fragment {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                // clear the actionbar title
-                getActivity().getActionBar().setTitle("");
-
-                setSharedElementReturnTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_image_transform));
-                setExitTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.explode));
-                view.setTransitionName("testing");
+                setReenterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
 
                 TextView textview = (TextView)view.findViewById(R.id.listtiemnoteid);
                 String noteid = textview.getText().toString();
 
                 Fragment fragment = SingleNoteFragment.newInstance(noteid, false);
-                fragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_image_transform));
                 fragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.explode));
-
 
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.replace(R.id.container, fragment);
                 transaction.addToBackStack(null);
-                transaction.addSharedElement(view, "testing");
-                // Commit the transaction
                 transaction.commit();
-
-                /*
-                getActivity().getFragmentManager().beginTransaction()
-                        .replace(R.id.container, SingleNoteFragment.newInstance(noteid, false))
-                        .commit();*/
             }
         });
 
-        getActivity().getActionBar().setTitle(getArguments().getString(ARG_NOTEBOOKTITLE));
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d("matternote", "fab on the list onclick");
 
-                // add a new empty note to the db
-                SQLiteOpenHelper mDbHelper = new NotebookDBHelper(getActivity());
-                SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
-                ContentValues values = new ContentValues();
-                values.put(NotebookDBHelper.COLUMN_NOTE_CONTENT,"");
-                values.put(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, getArguments().getString(ARG_NOTEBOOKTITLE));
-                values.put(NotebookDBHelper.COLUMN_COVER_COLOR, 1);
-
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date date = new Date();
-
-                values.put(NotebookDBHelper.COLUMN_LASTEDIT, dateFormat.format(date));
-
-                long newRowId;
-                newRowId = db.insert(
-                        NotebookDBHelper.TABLE_NAME,
-                        null,
-                        values);
-
-                Log.d("matternote", "new row id" + newRowId);
-                // navigate to singlenotefragment with new note id
-                // todo turn the new fregment to edit mode....
+                long newRowId = addNewNoteList();
 
                 if (newRowId!= -1){
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                    transaction.replace(R.id.container, SingleNoteFragment.newInstance(Long.toString(newRowId), false));
+                    transaction.replace(R.id.container, SingleNoteFragment.newInstance(Long.toString(newRowId), true));
                     transaction.addToBackStack(null);
-                    // Commit the transaction
                     transaction.commit();
                 }else {
                     Log.d("matternote", "newRowId equal -1, insert error" );
                 }
-
-
             }
         });
 
@@ -160,11 +124,9 @@ public class NoteListFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
         mCursor = loadDB();
-
-        // the doc said I should use  use LoaderManager with a CursorLoader.......
 
         ListAdapter adapter = new SimpleCursorAdapter(getActivity(), // Context.
                 R.layout.firstlinelistitem, // Specify the row template
@@ -184,9 +146,54 @@ public class NoteListFragment extends Fragment {
 
     }
 
+    @Override
+    public void onPause() {
+        if (db!=null)
+            db.close();
+
+        if(mCursor!=null)
+            mCursor.close();
+        super.onPause();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString("notebookTitle",notebookTitle);
+        super.onSaveInstanceState(outState);
+    }
+
+    long addNewNoteList(){
+        // add a new empty note to the db
+        SQLiteOpenHelper mDbHelper = new NotebookDBHelper(getActivity());
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(NotebookDBHelper.COLUMN_NOTE_CONTENT,"");
+        values.put(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, getArguments().getString(ARG_NOTEBOOKTITLE));
+        values.put(NotebookDBHelper.COLUMN_COVER_COLOR, 1);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+
+        values.put(NotebookDBHelper.COLUMN_LASTEDIT, dateFormat.format(date));
+
+        long newRowId;
+        newRowId = db.insert(
+                NotebookDBHelper.TABLE_NAME,
+                null,
+                values);
+
+        Log.d("matternote", "new row id" + newRowId);
+
+        if (db!=null)
+            db.close();
+
+        return newRowId;
+    }
+
     Cursor loadDB(){
         SQLiteOpenHelper mDbHelper = new NotebookDBHelper(getActivity());
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        db = mDbHelper.getReadableDatabase();
 
         String selection =  NotebookDBHelper.COLUMN_NOTEBOOK_NAME+" LIKE ?";
 
@@ -196,31 +203,7 @@ public class NoteListFragment extends Fragment {
         return mCursor;
     }
 
-    /*
-    private class SharedElementCursorAdapter extends SimpleCursorAdapter {
-        public SharedElementCursorAdapter(Context context, int layout, Cursor c, String[] from,
-                              int[] to) {
-            super(context, layout, c, from, to);
 
-        }
-        public void setViewText(TextView v, String text) {
-            v.setText(text);
-        }
-
-
-    }*/
-
-    /*
-    private class TransitionViewBinder implements SimpleCursorAdapter.ViewBinder{
-
-        @Override
-        public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-            String text = cursor.getString(from[i]);
-
-
-            return true;
-        }
-    }*/
 }
 
 

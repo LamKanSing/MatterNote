@@ -8,13 +8,17 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="edit_text_hint">Start here</string>
+    <string name="hint_notebookname">New Notebook Name</string>
+    <string name="toast_empty_notebookname">Notebook Name Cannot Empty</string>
 
-    <string name="dummytext">There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text.
-    There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text.
-    There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text.
-    There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text.
-    There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text.
-    There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text.
-    There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text. There are a lot of text. Some may text. bloody text. Lot and lot of text.
-    </string>
+    <string name="toast_new_note_saved">New Note saved</string>
+    <string name="toast_new_note_error">Something Wrong, not saved</string>
+    <string name="toast_note_updated">Note updated</string>
+    <string name="toast_note_update_error">Something Wrong, not updated</string>
+
+    <string name="button_save">save</string>
+    <string name="button_cancell">cancell</string>
+    <string name="dialog_title_notebookname">Enter New Notebook Name</string>
+
+
 </resources>
