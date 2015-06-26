@@ -35,10 +35,6 @@ public class Notebooks extends Activity implements InputNotebookNameDialogFragme
 
             //todo think about the design, tell the user you are viewing the notebook/ list of note / single detail note...
 
-            // todo you better create an enter anim once the app on create
-            // the following don't work too
-            //fragment.setEnterTransition(TransitionInflater.from(this).inflateTransition(android.R.transition.slide_bottom));
-
             getFragmentManager().beginTransaction()
                     .add(R.id.container, fragment).commit();
         }

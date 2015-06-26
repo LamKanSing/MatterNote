@@ -149,6 +149,7 @@ public class NotebookFragment extends Fragment
             }
         });
 
+        /*
         loadDBReturnCursor();
 
         ListAdapter adapter = new SimpleCursorAdapter(getActivity(),
@@ -157,7 +158,7 @@ public class NotebookFragment extends Fragment
                 new String[] { NotebookDBHelper.COLUMN_NOTEBOOK_NAME },
                 new int[] { android.R.id.text1 });
         listview.setAdapter(adapter);
-
+        */
 
         return rootView;
     }
@@ -165,6 +166,14 @@ public class NotebookFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
+        loadDBReturnCursor();
+
+        ListAdapter adapter = new SimpleCursorAdapter(getActivity(),
+                android.R.layout.simple_list_item_1,
+                mCursor,
+                new String[] { NotebookDBHelper.COLUMN_NOTEBOOK_NAME },
+                new int[] { android.R.id.text1 });
+        listview.setAdapter(adapter);
     }
 
     @Override

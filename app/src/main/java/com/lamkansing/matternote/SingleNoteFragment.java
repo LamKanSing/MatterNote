@@ -128,6 +128,7 @@ public class SingleNoteFragment extends Fragment {
         });
 
         // todo the scroll don't work stable on emsumlater, check it at real devcies
+        // it don't work on real device
         showView.getViewTreeObserver().addOnScrollChangedListener(
                 new ViewTreeObserver.OnScrollChangedListener() {
             @Override
