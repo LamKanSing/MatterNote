@@ -84,7 +84,6 @@ public class NotebookFragment extends Fragment
             getActivity().getActionBar().setTitle(R.string.app_name);
         }
 
-        // todo you better create an enter anim once the app on create
         // the follow code work when notebookfragment -> notelistfragment
         // it don't work when notebookfragemtn start
         Slide slideExit = new Slide();
@@ -149,16 +148,6 @@ public class NotebookFragment extends Fragment
             }
         });
 
-        /*
-        loadDBReturnCursor();
-
-        ListAdapter adapter = new SimpleCursorAdapter(getActivity(),
-                android.R.layout.simple_list_item_1,
-                mCursor,
-                new String[] { NotebookDBHelper.COLUMN_NOTEBOOK_NAME },
-                new int[] { android.R.id.text1 });
-        listview.setAdapter(adapter);
-        */
 
         return rootView;
     }

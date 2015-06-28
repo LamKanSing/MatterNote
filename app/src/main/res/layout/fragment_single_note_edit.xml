@@ -23,6 +23,7 @@
             android:layout_gravity="left|bottom" />
     </FrameLayout>
 
+    <!-- todo fix the layout below stuff...-->
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

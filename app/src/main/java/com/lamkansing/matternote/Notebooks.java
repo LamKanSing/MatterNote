@@ -33,8 +33,7 @@ public class Notebooks extends Activity implements InputNotebookNameDialogFragme
         if (getFragmentManager().findFragmentById(R.id.container) == null){
             Fragment fragment = NotebookFragment.newInstance();
 
-            //todo think about the design, tell the user you are viewing the notebook/ list of note / single detail note...
-
+            // todo you need a giude to tell user how to use your app....
             getFragmentManager().beginTransaction()
                     .add(R.id.container, fragment).commit();
         }
@@ -43,8 +42,7 @@ public class Notebooks extends Activity implements InputNotebookNameDialogFragme
 
 
         getActionBar().setDisplayShowHomeEnabled(true);
-        // todo you need a new icon
-        getActionBar().setLogo(R.drawable.ic_action_setting);
+        getActionBar().setLogo(R.drawable.ic_action_m);
         getActionBar().setDisplayUseLogoEnabled(true);
 
     }
