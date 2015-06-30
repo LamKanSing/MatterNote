@@ -60,6 +60,8 @@ public class Notebooks extends Activity implements InputNotebookNameDialogFragme
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
+        // todo you have no action here, remove the icon pls
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -72,10 +74,9 @@ public class Notebooks extends Activity implements InputNotebookNameDialogFragme
 
     @Override
     public void onDialogPositiveClick(String notebookName){
-        //  pass directly to the singlenotefragment to make new note...
+        //  pass directly to the singlenotefragment to make new note
         long newRowId = addNewNoteList(notebookName);
 
-        //
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.container, SingleNoteFragment.newInstance(Long.toString(newRowId), true));
         transaction.addToBackStack(null);
