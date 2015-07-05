@@ -11,4 +11,3 @@ public class ApplicationTest extends InstrumentationTestCase{
         assertEquals(expected, expected);
     }
 }
-// todo you need a new git branch to do the stupid testing....
