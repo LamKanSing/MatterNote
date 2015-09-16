@@ -102,7 +102,7 @@ public class NotebookFragment extends Fragment
         // For whatever reason, the transition are called at reverse order,
         // reenter first, than return, temp solution to set the start overhead maintain
         // the order
-        slideReenter.setStartDelay(900);
+        slideReenter.setStartDelay(800);
         setReenterTransition(slideReenter);
 
         fabaddnotebook = (FloatingActionButton)rootView.findViewById(R.id.fabaddnotebook);

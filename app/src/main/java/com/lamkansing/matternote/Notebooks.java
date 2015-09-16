@@ -38,6 +38,9 @@ public class Notebooks extends Activity implements InputNotebookNameDialogFragme
                     .add(R.id.container, fragment).commit();
         }
 
+        // todo you have three fragment, the saveinstancestate should transsacte between them
+        // ex: when the app go to back stack when user look at note list fragment,
+        // the app should let user to go back to note list fragment with saveinstancestate
 
 
 

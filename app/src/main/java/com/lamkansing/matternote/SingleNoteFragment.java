@@ -100,8 +100,6 @@ public class SingleNoteFragment extends Fragment {
         fab = (FloatingActionButton)rootView.findViewById(R.id.fab);
         mScene2 = Scene.getSceneForLayout(mSceneRoot, R.layout.fragment_single_note_edit, getActivity());
 
-
-        //textview1 = (TextView)rootView.findViewById(R.id.textView);
         showView.setMovementMethod(new ScrollingMovementMethod());
 
 
