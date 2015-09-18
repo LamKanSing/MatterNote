@@ -9,11 +9,14 @@ import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.espresso.matcher.CursorMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.test.espresso.assertion.LayoutAssertions;
 import android.test.suitebuilder.annotation.LargeTest;
+import android.util.Log;
 
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,15 +46,15 @@ import static org.hamcrest.Matchers.instanceOf;
 @LargeTest
 public class EspressoTest {
 
+    String newNotebookName;
+
     @Rule
     public ActivityTestRule<Notebooks> mActivityRule =
             new ActivityTestRule<>(Notebooks.class);
 
-    @Test
-    public void createNewNotebookAndNewContent() {
-        onView(withId(R.id.fabaddnotebook)).check(matches(isDisplayed()));
-        onView(withId(R.id.fabaddnotebook)).perform(click());
-
+    @Before
+    public void initialize() {
+        // random gen 7 characters as new notebook name
         Random r = new Random();
         char c ;
         StringBuilder sb = new StringBuilder();
@@ -59,7 +62,21 @@ public class EspressoTest {
             c = (char)(r.nextInt(26) + 'a');
             sb.append(c);
         }
-        String newNotebookName = sb.toString();
+
+        newNotebookName = sb.toString();
+
+        Log.d("espresso test", "newNotebookName is " + newNotebookName);
+    }
+
+    @Test
+    public void testNotebook(){
+        createNewNotebookAndNewContent();
+        updateContent();
+    }
+
+    public void createNewNotebookAndNewContent() {
+        onView(withId(R.id.fabaddnotebook)).check(matches(isDisplayed()));
+        onView(withId(R.id.fabaddnotebook)).perform(click());
 
         onView(withId(R.id.editText_notebookname)).check(matches(isDisplayed()));
         onView(withId(R.id.editText_notebookname)).perform(typeText(newNotebookName),
@@ -72,6 +89,8 @@ public class EspressoTest {
 
         // add new content
         onView(withId(R.id.editText1)).perform(typeText("new content"), closeSoftKeyboard());
+
+        // closeSoftKeyboard() take time
         try{
         Thread.sleep(1000);
         } catch (Exception e){
@@ -90,6 +109,8 @@ public class EspressoTest {
 
         // new content on the list
         onView(withId(R.id.notebookList)).check(matches(isDisplayed()));
+
+        // todo how abot delete
         try{
             Thread.sleep(1000);
         } catch (Exception e){
@@ -99,15 +120,48 @@ public class EspressoTest {
         onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, newNotebookName))
                 .check(matches(isDisplayed()));
 
+
+        onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, newNotebookName))
+                .perform(click());
+        onView(withId(R.id.singlelinetextview)).check(LayoutAssertions.noEllipsizedText());
+        onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTE_CONTENT, "new content"))
+                .check(matches(isDisplayed()));
+    }
+
+    /*
+    @Test
+    public void updateContent(){
+        // one by one or what???/??
+
+        onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, newNotebookName))
+                .check(matches(isDisplayed()));
+
+        // display the content need update
+        onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, newNotebookName))
+                .perform(click());
+        // if the content is too long to the listview, it cannot check
+        /// what are you doing.....
+        onView(withId(R.id.singlelinetextview)).check(LayoutAssertions.noEllipsizedText());
+
+        //onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTE_CONTENT, newNotebookName))
+        //        .check(LayoutAssertions.noEllipsizedText());
+        //onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTE_CONTENT, newNotebookName))
+        //        .check(matches(withText("new content")));
+
+
+        // compare content on view and edit mode
+
+    }*/
+
+    @Test
+    public void updateNotSaved(){
+        // todo add a toast to let user know content not saved
     }
 
     @Test
-    public void updateContent(){
-        ////???
+    public void newContentOnExistNotebook(){
 
     }
-
-
 
 
 }
