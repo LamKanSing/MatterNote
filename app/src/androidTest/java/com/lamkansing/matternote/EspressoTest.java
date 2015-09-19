@@ -27,7 +27,7 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.action.ViewActions.pressBack;
+import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withHint;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -41,12 +41,14 @@ import static android.support.test.espresso.Espresso.onData;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class EspressoTest {
 
     String newNotebookName;
+    String newContent = "new Content";
 
     @Rule
     public ActivityTestRule<Notebooks> mActivityRule =
@@ -54,16 +56,8 @@ public class EspressoTest {
 
     @Before
     public void initialize() {
-        // random gen 7 characters as new notebook name
-        Random r = new Random();
-        char c ;
-        StringBuilder sb = new StringBuilder();
-        for (int i=0; i<7; i++){
-            c = (char)(r.nextInt(26) + 'a');
-            sb.append(c);
-        }
 
-        newNotebookName = sb.toString();
+        newNotebookName = genSevenRanChar();
 
         Log.d("espresso test", "newNotebookName is " + newNotebookName);
     }
@@ -88,7 +82,7 @@ public class EspressoTest {
         onView(withId(R.id.editText1)).check((matches(withHint(R.string.edit_text_hint))));
 
         // add new content
-        onView(withId(R.id.editText1)).perform(typeText("new content"), closeSoftKeyboard());
+        onView(withId(R.id.editText1)).perform(typeText(newContent), closeSoftKeyboard());
 
         // closeSoftKeyboard() take time
         try{
@@ -98,8 +92,6 @@ public class EspressoTest {
         }
         // save new content
         onView(withId(R.id.fab)).check(matches(isClickable()));
-        ////
-
         onView(withId(R.id.fab)).perform(click());
 
 
@@ -121,37 +113,44 @@ public class EspressoTest {
                 .check(matches(isDisplayed()));
 
 
-        onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, newNotebookName))
-                .perform(click());
-        onView(withId(R.id.singlelinetextview)).check(LayoutAssertions.noEllipsizedText());
-        onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTE_CONTENT, "new content"))
-                .check(matches(isDisplayed()));
+
     }
 
-    /*
-    @Test
     public void updateContent(){
-        // one by one or what???/??
-
         onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, newNotebookName))
                 .check(matches(isDisplayed()));
 
         // display the content need update
         onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, newNotebookName))
                 .perform(click());
+
         // if the content is too long to the listview, it cannot check
-        /// what are you doing.....
         onView(withId(R.id.singlelinetextview)).check(LayoutAssertions.noEllipsizedText());
+        onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTE_CONTENT, newContent))
+                .check(matches(isDisplayed()));
+        onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTE_CONTENT, newContent))
+                .perform(click());
 
-        //onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTE_CONTENT, newNotebookName))
-        //        .check(LayoutAssertions.noEllipsizedText());
-        //onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTE_CONTENT, newNotebookName))
-        //        .check(matches(withText("new content")));
+        // showview and title is displayed and have proper content, editview gone
+        checkShowMode();
+        onView(withId(R.id.title)).check(matches(withText(newNotebookName)));
+        onView(withId(R.id.showview)).check(matches(withText(newContent)));
 
+        onView(withId(R.id.showview)).perform(longClick());
 
-        // compare content on view and edit mode
+        checkEditMode();
 
-    }*/
+        // update content at edittext
+        String update = genSevenRanChar();
+        onView(withId(R.id.editText1)).perform(typeText(update),
+                closeSoftKeyboard());
+        onView(withId(R.id.fab)).perform(click());
+
+        // the content on the list updated
+        Espresso.pressBack();
+        onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTE_CONTENT, newContent + update))
+                .check(matches(isDisplayed()));
+    }
 
     @Test
     public void updateNotSaved(){
@@ -160,6 +159,46 @@ public class EspressoTest {
 
     @Test
     public void newContentOnExistNotebook(){
+        // add new Content on the notebook "testing 88"
+        String targetNotebookName = "testing 88";
+        onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, targetNotebookName))
+                .check(matches(isDisplayed()));
+        onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, targetNotebookName))
+                .perform(click());
+
+        onView(withId(R.id.fabnotelist)).perform(click());
+
+        // check the app in edit mode
+        checkEditMode();
+
+
+    }
+
+    private String genSevenRanChar(){
+        // random gen 7 characters
+        Random r = new Random();
+        char c ;
+        StringBuilder sb = new StringBuilder();
+        for (int i=0; i<7; i++){
+            c = (char)(r.nextInt(26) + 'a');
+            sb.append(c);
+        }
+        return sb.toString();
+    }
+
+    private void checkEditMode(){
+        // action button and edittext Visibile
+        onView(withId(R.id.title)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.showview)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.editText1)).check(matches(isDisplayed()));
+        onView(withId(R.id.fab)).check(matches(isDisplayed()));
+    }
+
+    private void checkShowMode(){
+        onView(withId(R.id.title)).check(matches(isDisplayed()));
+        onView(withId(R.id.showview)).check(matches(isDisplayed()));
+        onView(withId(R.id.editText1)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.fab)).check(matches(not(isDisplayed())));
 
     }
 
