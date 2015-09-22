@@ -26,17 +26,21 @@ import java.util.Date;
 
 
 /**
-    todo add something..... commenrt
+ *  List note item on the specific notebook
  */
 public class NoteListFragment extends Fragment {
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    // the fragment initialization parameters
     private static final String ARG_NOTEBOOKTITLE = "notebooktitle";
+
+    private static final String LOG_TAG = "matternote";
 
     private String notebookTitle;
     Cursor mCursor;
     SQLiteDatabase db;
     ListView mListView;
-    FloatingActionButton fab;
+
+    // add new note floating action button
+    FloatingActionButton addNoteFab;
 
 
     /**
@@ -77,16 +81,17 @@ public class NoteListFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_note_list, container, false);
 
         mListView = (ListView)rootView.findViewById(R.id.listView);
-        fab = (FloatingActionButton)rootView.findViewById(R.id.fabnotelist);
+        addNoteFab = (FloatingActionButton)rootView.findViewById(R.id.fabnotelist);
 
+        // listener - list item is clicked
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                setReenterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
-
                 TextView textview = (TextView)view.findViewById(R.id.listtiemnoteid);
                 String noteid = textview.getText().toString();
 
+                // set enter transition of new fragment and re-enter transition of this fragment
+                setReenterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.fade));
                 Fragment fragment = SingleNoteFragment.newInstance(noteid, false);
                 fragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.explode));
 
@@ -97,10 +102,11 @@ public class NoteListFragment extends Fragment {
             }
         });
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        // listener - floating action button is clicked
+        addNoteFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("matternote", "fab on the list onclick");
+                Log.d(LOG_TAG, "fab on the list onclick");
 
                 long newRowId = addNewNoteList();
 
@@ -110,11 +116,10 @@ public class NoteListFragment extends Fragment {
                     transaction.addToBackStack(null);
                     transaction.commit();
                 }else {
-                    Log.d("matternote", "newRowId equal -1, insert error" );
+                    Log.d(LOG_TAG, "newRowId equal -1, database insert error" );
                 }
             }
         });
-
 
         return rootView;
     }
@@ -137,6 +142,7 @@ public class NoteListFragment extends Fragment {
 
     @Override
     public void onPause() {
+        Log.d(LOG_TAG, "notelist fragment onpause");
         if (db!=null)
             db.close();
 
@@ -151,6 +157,9 @@ public class NoteListFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
+    /*
+     * inert new row at database with empty content
+     */
     long addNewNoteList(){
         // add a new empty note to the db
         SQLiteOpenHelper mDbHelper = new NotebookDBHelper(getActivity());
@@ -172,7 +181,7 @@ public class NoteListFragment extends Fragment {
                 null,
                 values);
 
-        Log.d("matternote", "new row id" + newRowId);
+        Log.d(LOG_TAG, "new row id" + newRowId);
 
         if (db!=null)
             db.close();
@@ -180,6 +189,9 @@ public class NoteListFragment extends Fragment {
         return newRowId;
     }
 
+    /*
+     * query notes for the notebooks
+     */
     Cursor loadDB(){
         SQLiteOpenHelper mDbHelper = new NotebookDBHelper(getActivity());
         db = mDbHelper.getReadableDatabase();

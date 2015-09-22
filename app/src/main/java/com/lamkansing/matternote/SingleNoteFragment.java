@@ -31,12 +31,11 @@ import java.util.Date;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link SingleNoteFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * View and edit single note in this fragment
  */
 public class SingleNoteFragment extends Fragment implements TextWatcher {
 
+    // the fragment initialization parameters
     public static final String ARG_NOTEID = "noteid";
     public static final String ARG_IS_NEWNOTE= "newnote";
 
@@ -46,10 +45,9 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
 
     public static final String PREF_EDITTEXT_CHANGE = "edittextchange";
 
-    private static final String TAG_NAME= "matternote";
+    private static final String LOG_TAG= "matternote";
 
     private ViewGroup mSceneRoot;
-    //private Scene mScene2;
 
     private SQLiteDatabase database;
 
@@ -73,6 +71,9 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
+     *
+     * @param noteid note's id at db
+     * @param newnote whether it is new create note
      * @return A new instance of fragment SingleNoteFragment.
      */
     public static SingleNoteFragment newInstance(String noteid, boolean newnote) {
@@ -110,10 +111,9 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
         titleView = (TextView)rootView.findViewById(R.id.title);
         fab = (FloatingActionButton)rootView.findViewById(R.id.fab);
 
-        showView.setMovementMethod(new ScrollingMovementMethod());
 
 
-        // set the noteid, mode and text-note-save on saveedInstanceState
+        // set the noteid, mode and text-note-save on savedInstanceState
         if (savedInstanceState!=null){
             String mode = savedInstanceState.getString(STATE_EDITVIEW_MODE, "something wrong");
 
@@ -122,16 +122,19 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
             }
         }
 
+        // change to edit mode if long click show view
         showView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-
                 turnEditMode();
-
                 return true;
-
             }
         });
+
+        //showView.setMovementMethod(new ScrollingMovementMethod());
+
+        // todo line 137 -158 crash the app in funny way,
+        showView.setMovementMethod(ScrollingMovementMethod.getInstance());
 
         // todo the scroll don't work stable on emsumlater, check it at real devcies
         // delete it or not
@@ -140,18 +143,20 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
                 new ViewTreeObserver.OnScrollChangedListener() {
             @Override
             public void onScrollChanged() {
-                Log.d(TAG_NAME, "on scroll changed");
-
+                Log.d(LOG_TAG, "on scroll changed");
+                //turnEditMode();
                 // enlarge the textview to let more space for text
+                /*
                 TransitionManager.beginDelayedTransition(mSceneRoot);
                 ViewGroup.LayoutParams params = square.getLayoutParams();
                 int newSize = 0;
                 params.height = newSize;
                 square.setLayoutParams(params);
-
+*/
 
             }
         });
+
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -239,6 +244,8 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
 
     @Override
     public void onPause() {
+        Log.d(LOG_TAG, "single notefragment onpause");
+
         if (database!=null)
             database.close();
         super.onPause();
@@ -311,7 +318,7 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable s) {
-        Log.d("matter note", "afterTExtChanged called");
+        Log.d(LOG_TAG, "afterTExtChanged called");
         // indicate that the edittext is modify
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = sharedPref.edit();

@@ -24,18 +24,16 @@ import com.melnykov.fab.FloatingActionButton;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link NotebookFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * List all notebooks in the app
  */
-public class NotebookFragment extends Fragment
-        {
-
+public class NotebookFragment extends Fragment {
+    private static final String LOG_TAG = "matternote";
 
     ListView listview;
     SQLiteDatabase db;
     Cursor mCursor;
     FloatingActionButton fabaddnotebook;
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -57,11 +55,6 @@ public class NotebookFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
-
-
     }
 
     @Override
@@ -74,17 +67,16 @@ public class NotebookFragment extends Fragment
             getActivity().getActionBar().setTitle(R.string.app_name);
         }
 
-        // the follow code work when notebookfragment -> notelistfragment
-        // it don't work when notebookfragemtn start
+        // exit transition of this fragment from back stack
         Slide slideExit = new Slide();
         slideExit.setSlideEdge(Gravity.RIGHT);
         slideExit.excludeTarget(fabaddnotebook, true);
         slideExit.addTarget(R.id.notebookList);
         setExitTransition(slideExit);
 
+        // reenter transition of this fragment from back stack
         Slide slideReenter = new Slide();
         slideReenter.setSlideEdge(Gravity.RIGHT);
-        // the exclude target don't work for enenter/ return  fab
         slideReenter.excludeTarget(fabaddnotebook, true);
         slideReenter.addTarget(R.id.notebookList);
 
@@ -108,14 +100,13 @@ public class NotebookFragment extends Fragment
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //String notebookName = (String)parent.getItemAtPosition(position);
-
                 Cursor c = ((SimpleCursorAdapter)parent.getAdapter()).getCursor();
                 c.moveToPosition(position);
                 String notebookName = c.getString(1);
 
                 Fragment fragment = NoteListFragment.newInstance(notebookName);
 
+                // enter transition of new fragment
                 Slide slideEnter = new Slide();
                 slideEnter.setSlideEdge(Gravity.LEFT);
                 slideEnter.excludeTarget(R.id.fabnotelist, true);
@@ -123,9 +114,9 @@ public class NotebookFragment extends Fragment
                 slideEnter.setStartDelay(400);
                 fragment.setEnterTransition(slideEnter);
 
+                // return transition of new fragment
                 Slide slideReturn = new Slide();
                 slideReturn.setSlideEdge(Gravity.LEFT);
-                // the exclude target don't work for enenter/ return  fab
                 slideReturn.excludeTarget(R.id.fabnotelist, true);
                 slideReturn.addTarget(R.id.listView);
 
@@ -157,6 +148,8 @@ public class NotebookFragment extends Fragment
 
     @Override
     public void onPause() {
+        Log.d(LOG_TAG, "notebookfragment onpause");
+
         if(db!=null)
             db.close();
         if (mCursor!=null)
@@ -164,6 +157,9 @@ public class NotebookFragment extends Fragment
         super.onPause();
     }
 
+    /*
+     * query all notebooks in the app
+     */
     void loadDBReturnCursor(){
         SQLiteOpenHelper mDbHelper = new NotebookDBHelper(getActivity());
         db = mDbHelper.getReadableDatabase();
@@ -172,7 +168,7 @@ public class NotebookFragment extends Fragment
                 NotebookDBHelper.COLUMN_NOTEBOOK_NAME}, null,null
                 , NotebookDBHelper.COLUMN_NOTEBOOK_NAME, null, null);
 
-        Log.d("matternote", "mCursor count" + mCursor.getCount());
+        Log.d(LOG_TAG, "mCursor count" + mCursor.getCount());
     }
 
 
