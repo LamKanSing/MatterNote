@@ -3,13 +3,11 @@ package com.lamkansing.matternote;
 
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.provider.ContactsContract;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,9 +26,7 @@ import java.util.Date;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link NoteListFragment#newInstance} factory method to
- * create an instance of this fragment.
+    todo add something..... commenrt
  */
 public class NoteListFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -128,18 +124,11 @@ public class NoteListFragment extends Fragment {
         super.onResume();
         mCursor = loadDB();
 
-        ListAdapter adapter = new SimpleCursorAdapter(getActivity(), // Context.
-                R.layout.firstlinelistitem, // Specify the row template
-                // to use (here, two
-                // columns bound to the
-                // two retrieved cursor
-                // rows).
-                mCursor, // Pass in the cursor to bind to.
-                // Array of cursor columns to bind to.
+        ListAdapter adapter = new SimpleCursorAdapter(getActivity(),
+                R.layout.firstlinelistitem,
+                mCursor,
                 new String[] { NotebookDBHelper.COLUMN_NOTE_CONTENT,
                         NotebookDBHelper.COLUMN_ID },
-                // Parallel array of which template objects to bind to those
-                // columns.
                 new int[] { R.id.singlelinetextview, R.id.listtiemnoteid });
 
         mListView.setAdapter(adapter);

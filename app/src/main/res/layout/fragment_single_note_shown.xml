@@ -7,7 +7,6 @@
             android:id="@+id/rootscence"
             tools:context="com.lamkansing.matternote.SingleNoteFragment">
 
-<!-- Title section, set height by code for Ratio keylines -->
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="150dp"

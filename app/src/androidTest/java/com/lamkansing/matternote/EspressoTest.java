@@ -82,32 +82,20 @@ public class EspressoTest {
         onView(withId(R.id.editText1)).check((matches(withHint(R.string.edit_text_hint))));
 
         // add new content
-        onView(withId(R.id.editText1)).perform(typeText(newContent), closeSoftKeyboard());
+        typeEditText1(newContent);
 
-        // closeSoftKeyboard() take time
-        try{
-        Thread.sleep(1000);
-        } catch (Exception e){
-
-        }
         // save new content
         onView(withId(R.id.fab)).check(matches(isClickable()));
         onView(withId(R.id.fab)).perform(click());
 
 
         // pass back and new content on the list
-        // ViewAction.pressBack don't work
         Espresso.pressBack();
 
         // new content on the list
         onView(withId(R.id.notebookList)).check(matches(isDisplayed()));
 
-        // todo how abot delete
-        try{
-            Thread.sleep(1000);
-        } catch (Exception e){
 
-        }
 
         onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, newNotebookName))
                 .check(matches(isDisplayed()));
@@ -142,8 +130,8 @@ public class EspressoTest {
 
         // update content at edittext
         String update = genSevenRanChar();
-        onView(withId(R.id.editText1)).perform(typeText(update),
-                closeSoftKeyboard());
+        typeEditText1(update);
+
         onView(withId(R.id.fab)).perform(click());
 
         // the content on the list updated
@@ -154,7 +142,34 @@ public class EspressoTest {
 
     @Test
     public void updateNotSaved(){
-        // todo add a toast to let user know content not saved
+        // add new Content on the notebook "testing 89"
+        String targetNotebookName = "testing 89";
+        onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, targetNotebookName))
+                .check(matches(isDisplayed()));
+        onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, targetNotebookName))
+                .perform(click());
+
+        String targetNote = "new content";
+
+        onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTE_CONTENT, targetNote))
+                .check(matches(isDisplayed()));
+        onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTE_CONTENT, targetNote))
+                .perform(click());
+
+        checkShowMode();
+        onView(withId(R.id.showview)).perform(longClick());
+
+        // check the app in edit mode
+        checkEditMode();
+
+        String newContentExistNotebook = genSevenRanChar();
+
+        typeEditText1(newContentExistNotebook);
+
+        // click back button to discard change
+        Espresso.pressBack();
+        onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTE_CONTENT, targetNote))
+                .check(matches(isDisplayed()));
     }
 
     @Test
@@ -171,7 +186,14 @@ public class EspressoTest {
         // check the app in edit mode
         checkEditMode();
 
+        String newContentExistNotebook = genSevenRanChar();
 
+        typeEditText1(newContentExistNotebook);
+
+        onView(withId(R.id.fab)).perform(click());
+        Espresso.pressBack();
+        onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTE_CONTENT, newContentExistNotebook))
+                .check(matches(isDisplayed()));
     }
 
     private String genSevenRanChar(){
@@ -199,8 +221,19 @@ public class EspressoTest {
         onView(withId(R.id.showview)).check(matches(isDisplayed()));
         onView(withId(R.id.editText1)).check(matches(not(isDisplayed())));
         onView(withId(R.id.fab)).check(matches(not(isDisplayed())));
-
     }
+
+    private void typeEditText1(String content){
+        onView(withId(R.id.editText1)).perform(typeText(content),
+                closeSoftKeyboard());
+        // closeSoftKeyboard() take time
+        try{
+            Thread.sleep(1000);
+        } catch (Exception e){
+
+        }
+    }
+
 
 
 }

@@ -15,6 +15,7 @@
     <string name="toast_new_note_error">Something Wrong, not saved</string>
     <string name="toast_note_updated">Note updated</string>
     <string name="toast_note_update_error">Something Wrong, not updated</string>
+    <string name="toast_note_change_notsave">Note Not Save</string>
 
     <string name="button_save">save</string>
     <string name="button_cancell">cancell</string>
