@@ -197,8 +197,7 @@ public class EspressoTest {
     }
 
     // todo you should quit the app without bug/leak/ crash....
-    // test case click one of the notebook -> click one of the notelist ->
-    // back -> back -> crash...
+
 
     private String genSevenRanChar(){
         // random gen 7 characters

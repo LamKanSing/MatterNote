@@ -25,8 +25,11 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
+
 
 public class Notebooks extends Activity implements InputNotebookNameDialogFragment.NoticeDialogListener{
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +39,6 @@ public class Notebooks extends Activity implements InputNotebookNameDialogFragme
         if (getFragmentManager().findFragmentById(R.id.container) == null){
             Fragment fragment = NotebookFragment.newInstance();
 
-            // todo you need a giude to tell user how to use your app....
             getFragmentManager().beginTransaction()
                     .add(R.id.container, fragment).commit();
         }
@@ -116,5 +118,7 @@ public class Notebooks extends Activity implements InputNotebookNameDialogFragme
 
         return newRowId;
     }
+
+
 
 }

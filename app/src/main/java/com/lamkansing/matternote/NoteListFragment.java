@@ -24,6 +24,8 @@ import com.melnykov.fab.FloatingActionButton;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
+
 
 /**
  *  List note item on the specific notebook
@@ -33,6 +35,8 @@ public class NoteListFragment extends Fragment {
     private static final String ARG_NOTEBOOKTITLE = "notebooktitle";
 
     private static final String LOG_TAG = "matternote";
+
+    private static final String SHOWCASE_LIST = "showcaselist";
 
     private String notebookTitle;
     Cursor mCursor;
@@ -82,6 +86,8 @@ public class NoteListFragment extends Fragment {
 
         mListView = (ListView)rootView.findViewById(R.id.listView);
         addNoteFab = (FloatingActionButton)rootView.findViewById(R.id.fabnotelist);
+
+        //presentShowcaseView(1000);
 
         // listener - list item is clicked
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -143,24 +149,24 @@ public class NoteListFragment extends Fragment {
     @Override
     public void onPause() {
         Log.d(LOG_TAG, "notelist fragment onpause");
+        if(mCursor!=null)
+            mCursor.close();
         if (db!=null)
             db.close();
 
-        if(mCursor!=null)
-            mCursor.close();
         super.onPause();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString("notebookTitle",notebookTitle);
+        outState.putString("notebookTitle", notebookTitle);
         super.onSaveInstanceState(outState);
     }
 
     /*
      * inert new row at database with empty content
      */
-    long addNewNoteList(){
+    private long addNewNoteList(){
         // add a new empty note to the db
         SQLiteOpenHelper mDbHelper = new NotebookDBHelper(getActivity());
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
@@ -192,7 +198,7 @@ public class NoteListFragment extends Fragment {
     /*
      * query notes for the notebooks
      */
-    Cursor loadDB(){
+    private Cursor loadDB(){
         SQLiteOpenHelper mDbHelper = new NotebookDBHelper(getActivity());
         db = mDbHelper.getReadableDatabase();
 
@@ -204,7 +210,15 @@ public class NoteListFragment extends Fragment {
         return mCursor;
     }
 
-
+    private void presentShowcaseView(int withDelay) {
+        new MaterialShowcaseView.Builder(getActivity())
+                .setTarget(addNoteFab)
+                .setDismissText("GOT IT")
+                .setContentText("Add new note here by clicking")
+                .setDelay(withDelay)
+                .singleUse(SHOWCASE_LIST)
+                .show();
+    }
 }
 
 

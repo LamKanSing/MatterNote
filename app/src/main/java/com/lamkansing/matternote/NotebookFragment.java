@@ -21,6 +21,7 @@ import android.transition.Slide;
 
 import com.melnykov.fab.FloatingActionButton;
 
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 
 
 /**
@@ -28,6 +29,8 @@ import com.melnykov.fab.FloatingActionButton;
  */
 public class NotebookFragment extends Fragment {
     private static final String LOG_TAG = "matternote";
+
+    private static final String SHOWCASE_NOTEBOOK = "showcasenotebook";
 
     ListView listview;
     SQLiteDatabase db;
@@ -129,6 +132,8 @@ public class NotebookFragment extends Fragment {
             }
         });
 
+        //presentShowcaseView(1000); // one second delay
+
 
         return rootView;
     }
@@ -150,10 +155,11 @@ public class NotebookFragment extends Fragment {
     public void onPause() {
         Log.d(LOG_TAG, "notebookfragment onpause");
 
-        if(db!=null)
-            db.close();
         if (mCursor!=null)
             mCursor.close();
+        if(db!=null)
+            db.close();
+
         super.onPause();
     }
 
@@ -171,7 +177,15 @@ public class NotebookFragment extends Fragment {
         Log.d(LOG_TAG, "mCursor count" + mCursor.getCount());
     }
 
-
+    private void presentShowcaseView(int withDelay) {
+        new MaterialShowcaseView.Builder(getActivity())
+                .setTarget(fabaddnotebook)
+                .setDismissText("GOT IT")
+                .setContentText("Add new notebook by clicking")
+                .setDelay(withDelay)
+                .singleUse(SHOWCASE_NOTEBOOK)
+                .show();
+    }
 
 
 

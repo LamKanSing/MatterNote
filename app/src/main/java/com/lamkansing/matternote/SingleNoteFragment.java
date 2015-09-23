@@ -29,6 +29,8 @@ import com.melnykov.fab.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
+
 
 /**
  * View and edit single note in this fragment
@@ -47,9 +49,10 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
 
     private static final String LOG_TAG= "matternote";
 
-    private ViewGroup mSceneRoot;
+    private static final String SHOWCASE_SINGLE_FAB = "showcasesinglefab";
+    private static final String SHOWCASE_SINGLE_LONG = "showcasesinglelong";
 
-    private SQLiteDatabase database;
+    private ViewGroup mSceneRoot;
 
     private String noteTitle = "", noteContent = "";
     private int notebookColor;
@@ -112,7 +115,6 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
         fab = (FloatingActionButton)rootView.findViewById(R.id.fab);
 
 
-
         // set the noteid, mode and text-note-save on savedInstanceState
         if (savedInstanceState!=null){
             String mode = savedInstanceState.getString(STATE_EDITVIEW_MODE, "something wrong");
@@ -131,76 +133,28 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
             }
         });
 
-        //showView.setMovementMethod(new ScrollingMovementMethod());
-
-        // todo line 137 -158 crash the app in funny way,
-        showView.setMovementMethod(ScrollingMovementMethod.getInstance());
-
-        // todo the scroll don't work stable on emsumlater, check it at real devcies
-        // delete it or not
-        // it don't work on real device
-        showView.getViewTreeObserver().addOnScrollChangedListener(
-                new ViewTreeObserver.OnScrollChangedListener() {
-            @Override
-            public void onScrollChanged() {
-                Log.d(LOG_TAG, "on scroll changed");
-                //turnEditMode();
-                // enlarge the textview to let more space for text
-                /*
-                TransitionManager.beginDelayedTransition(mSceneRoot);
-                ViewGroup.LayoutParams params = square.getLayoutParams();
-                int newSize = 0;
-                params.height = newSize;
-                square.setLayoutParams(params);
-*/
-
-            }
-        });
-
-
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Log.d("matternote", "click catch");
 
-                if (editView.getVisibility() == View.VISIBLE){
+                if (editView.getVisibility() == View.VISIBLE) {
                     String textToSave = editView.getText().toString();
-                    NotebookDBHelper databaseHelper = new NotebookDBHelper(getActivity());
-                    database = databaseHelper.getWritableDatabase();
 
-                    String noteid = getArguments().getString(ARG_NOTEID, "1");
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date date = new Date();
+                    int count = saveContent(textToSave);
 
-
-                    // the note already exist, update note content
-                    ContentValues values = new ContentValues();
-                    values.put(NotebookDBHelper.COLUMN_NOTE_CONTENT,textToSave);
-                    values.put(NotebookDBHelper.COLUMN_LASTEDIT, dateFormat.format(date));
-
-                    String selection = NotebookDBHelper.COLUMN_ID + " LIKE ?";
-                    String[] selectionArgs = { noteid };
-
-                    int count = database.update(
-                                NotebookDBHelper.TABLE_NAME,
-                                values,
-                                selection,
-                                selectionArgs);
-
-                    Log.d("matternote", "the count is " + count);
-
-                    if (count == 1){
+                    if (count == 1) {
                         // db update success
-                        Toast.makeText(getActivity(),R.string.toast_note_updated, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), R.string.toast_note_updated, Toast.LENGTH_LONG).show();
 
                         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
                         SharedPreferences.Editor ed = sharedPref.edit();
                         ed.putBoolean(PREF_EDITTEXT_CHANGE, false);
                         ed.commit();
-                    }else {
+                    } else {
                         // db update failure
-                        Toast.makeText(getActivity(),R.string.toast_note_update_error, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), R.string.toast_note_update_error, Toast.LENGTH_LONG).show();
                     }
                 }
             }
@@ -209,6 +163,7 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
         loadDB();
         showView.setText(noteContent);
         titleView.setText(noteTitle);
+
 
         // edit text is not change at the beginning
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
@@ -238,6 +193,8 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
 
         if (getArguments().getBoolean(ARG_IS_NEWNOTE)) {
             turnEditMode();
+        }else {
+            presentEditLngClickShowcaseView(1000);
         }
 
     }
@@ -246,17 +203,65 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
     public void onPause() {
         Log.d(LOG_TAG, "single notefragment onpause");
 
-        if (database!=null)
-            database.close();
         super.onPause();
     }
 
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-    void turnEditMode(){
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        Log.d(LOG_TAG, "afterTExtChanged called");
+        // indicate that the edittext is modify
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = sharedPref.edit();
+        ed.putBoolean(PREF_EDITTEXT_CHANGE, true);
+        ed.commit();
+    }
+
+    private int saveContent(String textToSave){
+        NotebookDBHelper databaseHelper = new NotebookDBHelper(getActivity());
+        SQLiteDatabase database = databaseHelper.getWritableDatabase();
+
+        String noteid = getArguments().getString(ARG_NOTEID, "1");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+
+
+        // the note already exist, update note content
+        ContentValues values = new ContentValues();
+        values.put(NotebookDBHelper.COLUMN_NOTE_CONTENT, textToSave);
+        values.put(NotebookDBHelper.COLUMN_LASTEDIT, dateFormat.format(date));
+
+        String selection = NotebookDBHelper.COLUMN_ID + " LIKE ?";
+        String[] selectionArgs = {noteid};
+
+        int count = database.update(
+                NotebookDBHelper.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
+        database.close();
+
+        Log.d("matternote", "the count is " + count);
+
+        return count;
+    }
+
+    private void turnEditMode(){
         Activity mActivity = getActivity();
         if (mActivity!=null && mActivity.getActionBar() !=null){
             mActivity.getActionBar().setTitle(noteTitle);
         }
+
+        presentFabShowcaseView(1000);
 
         // set the edittext visibile for longclick
         TransitionManager.beginDelayedTransition(mSceneRoot);
@@ -278,10 +283,9 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
 
     }
 
-
-    void loadDB() {
+    private void loadDB() {
         NotebookDBHelper databaseHelper = new NotebookDBHelper(getActivity());
-        database = databaseHelper.getReadableDatabase();
+        SQLiteDatabase database = databaseHelper.getReadableDatabase();
         String noteid = getArguments().getString(ARG_NOTEID, "1");
         Cursor cursor = database.query(
                 NotebookDBHelper.TABLE_NAME,
@@ -301,28 +305,29 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
             noteContent = cursor.getString(colNoteContent);
             notebookColor = cursor.getInt(colColor);
             dateTime = cursor.getString(colLastEditDate);
+            cursor.close();
         }
 
-        cursor.close();
+        database.close();
     }
 
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+    private void presentFabShowcaseView(int withDelay) {
+        new MaterialShowcaseView.Builder(getActivity())
+                .setTarget(fab)
+                .setDismissText("GOT IT")
+                .setContentText("Save the content by clicking")
+                .setDelay(withDelay)
+                .singleUse(SHOWCASE_SINGLE_FAB)
+                .show();
     }
 
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-    }
-
-    @Override
-    public void afterTextChanged(Editable s) {
-        Log.d(LOG_TAG, "afterTExtChanged called");
-        // indicate that the edittext is modify
-        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor ed = sharedPref.edit();
-        ed.putBoolean(PREF_EDITTEXT_CHANGE, true);
-        ed.commit();
+    private void presentEditLngClickShowcaseView(int withDelay) {
+        new MaterialShowcaseView.Builder(getActivity())
+                .setTarget(editView)
+                .setDismissText("GOT IT")
+                .setContentText("Long Click to edit content")
+                .setDelay(withDelay)
+                .singleUse(SHOWCASE_SINGLE_LONG)
+                .show();
     }
 }
