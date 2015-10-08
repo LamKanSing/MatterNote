@@ -45,9 +45,7 @@ public class EspressoTest {
 
     @Before
     public void initialize() {
-
         newNotebookName = genSevenRanChar();
-
         Log.d("espresso test", "newNotebookName is " + newNotebookName);
     }
 
@@ -131,14 +129,15 @@ public class EspressoTest {
 
     @Test
     public void updateNotSaved(){
-        // add new Content on the notebook "testing 89"
-        String targetNotebookName = "testing 89";
+        // add new Content on the notebook"
+        createNewNotebookAndNewContent();
+        String targetNotebookName = newNotebookName;
         onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, targetNotebookName))
                 .check(matches(isDisplayed()));
         onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, targetNotebookName))
                 .perform(click());
 
-        String targetNote = "new content";
+        String targetNote = newContent;
 
         onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTE_CONTENT, targetNote))
                 .check(matches(isDisplayed()));
@@ -163,8 +162,9 @@ public class EspressoTest {
 
     @Test
     public void newContentOnExistNotebook(){
-        // add new Content on the notebook "testing 88"
-        String targetNotebookName = "testing 88";
+        // add new Content on the notebook
+        createNewNotebookAndNewContent();
+        String targetNotebookName = newNotebookName;
         onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, targetNotebookName))
                 .check(matches(isDisplayed()));
         onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTEBOOK_NAME, targetNotebookName))
