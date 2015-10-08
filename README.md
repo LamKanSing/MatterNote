@@ -14,6 +14,7 @@ git clone https://github.com/LamKanSing/MatterNote.git
 Or you can click the "Download Zip" button to get the zip file, then extract the file. 
 Open the file by Android Studio. 
 ##Test
+Before testing, undo the show case view first.....
 1. Prepare testing device
 To Run the Espresso test, you need a android device connected with USB cable or emulator
 **Turn off animations** on your test device. Leaving system animations turned on in the test device might cause unexpected results or may lead your test to fail.
