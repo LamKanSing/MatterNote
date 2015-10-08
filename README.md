@@ -7,10 +7,8 @@ The app is tested by Espresso, Android testing framework for UI testing. It also
 MatterNote can save plain text content. It organize the content at notebook-note hierarchy.
 There are three Fragments in the app. NotebookFragment show all notebook at the app. NoteListFragment show all note within notebook. SingleNoteFragment can edit and view certain note.
 ##Build
-```
-function test() {
-  console.log("notice the blank line before this function?");
-}
+```python
+print 'hello world ' + 1 +1 
 ```
 ##Test
 ## License
