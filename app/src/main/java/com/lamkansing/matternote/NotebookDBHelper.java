@@ -5,9 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-/**
- * Created by line on 11/26/14.
- */
 public class NotebookDBHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_NAME = "notebookdb";

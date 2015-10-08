@@ -1,11 +1,6 @@
 package com.lamkansing.matternote;
 
-import android.app.Instrumentation;
-import android.content.Context;
-import android.database.sqlite.SQLiteCursor;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
-import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.espresso.matcher.CursorMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -14,8 +9,6 @@ import android.test.suitebuilder.annotation.LargeTest;
 import android.util.Log;
 
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,10 +30,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
 
 import static android.support.test.espresso.Espresso.onData;
 
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
@@ -195,8 +184,6 @@ public class EspressoTest {
         onData(CursorMatchers.withRowString(NotebookDBHelper.COLUMN_NOTE_CONTENT, newContentExistNotebook))
                 .check(matches(isDisplayed()));
     }
-
-    // todo you should quit the app without bug/leak/ crash....
 
 
     private String genSevenRanChar(){

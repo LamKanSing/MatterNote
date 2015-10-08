@@ -11,16 +11,12 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.method.ScrollingMovementMethod;
-import android.transition.Scene;
 import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.EditText;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +41,7 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
     private static final String STATE_MODE_EDIT = "edit";
     private static final String STATE_MODE_VIEW = "view";
 
+    // state whether the content is changed
     public static final String PREF_EDITTEXT_CHANGE = "edittextchange";
 
     private static final String LOG_TAG= "matternote";
@@ -58,17 +55,11 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
     private int notebookColor;
     String dateTime;
 
-
     TextView showView, titleView;
     FloatingActionButton fab;
 
     View square;
     EditText editView;
-
-    // todo pls fix it..
-    /*09-20 01:39:56.770  13449-13449/com.lamkansing.matternote W/IInputConnectionWrapper﹕ showStatusIcon on inactive InputConnection
-09-20 01:40:01.891  13449-13463/com.lamkansing.matternote W/SQLiteConnectionPool﹕ A SQLiteConnection object for database '/data/data/com.lamkansing.matternote/databases/notebook.db' was leaked!  Please fix your application to end transactions in progress properly and to close the database when it is no longer needed
-*/
 
     /**
      * Use this factory method to create a new instance of
@@ -148,10 +139,8 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
                         // db update success
                         Toast.makeText(getActivity(), R.string.toast_note_updated, Toast.LENGTH_LONG).show();
 
-                        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-                        SharedPreferences.Editor ed = sharedPref.edit();
-                        ed.putBoolean(PREF_EDITTEXT_CHANGE, false);
-                        ed.commit();
+                        // after saveContent, content on editview up-to-date, change the state
+                        markContentNotChange();
                     } else {
                         // db update failure
                         Toast.makeText(getActivity(), R.string.toast_note_update_error, Toast.LENGTH_LONG).show();
@@ -160,16 +149,14 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
             }
         });
 
+        // load the note at db and set it in the view
         loadDB();
         showView.setText(noteContent);
         titleView.setText(noteTitle);
 
 
         // edit text is not change at the beginning
-        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor ed = sharedPref.edit();
-        ed.putBoolean(PREF_EDITTEXT_CHANGE, false);
-        ed.commit();
+        markContentNotChange();
 
         return rootView;
     }
@@ -194,6 +181,7 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
         if (getArguments().getBoolean(ARG_IS_NEWNOTE)) {
             turnEditMode();
         }else {
+            // teach user to turn to edit mode by longclick
             presentEditLngClickShowcaseView(1000);
         }
 
@@ -261,6 +249,7 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
             mActivity.getActionBar().setTitle(noteTitle);
         }
 
+        // teach user to save content by fab
         presentFabShowcaseView(1000);
 
         // set the edittext visibile for longclick
@@ -278,9 +267,8 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
         editView.setVisibility(View.VISIBLE);
         fab.setVisibility(View.VISIBLE);
 
+        // watch whether content in editview change
         editView.addTextChangedListener(this);
-
-
     }
 
     private void loadDB() {
@@ -309,6 +297,13 @@ public class SingleNoteFragment extends Fragment implements TextWatcher {
         }
 
         database.close();
+    }
+
+    private void markContentNotChange(){
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = sharedPref.edit();
+        ed.putBoolean(PREF_EDITTEXT_CHANGE, false);
+        ed.commit();
     }
 
     private void presentFabShowcaseView(int withDelay) {

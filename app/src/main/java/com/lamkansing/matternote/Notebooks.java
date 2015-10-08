@@ -1,7 +1,6 @@
 package com.lamkansing.matternote;
 
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
@@ -10,22 +9,13 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
-import android.transition.Slide;
-import android.transition.TransitionInflater;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 
 
 public class Notebooks extends Activity implements InputNotebookNameDialogFragment.NoticeDialogListener{

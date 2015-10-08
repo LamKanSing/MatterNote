@@ -132,8 +132,8 @@ public class NotebookFragment extends Fragment {
             }
         });
 
-        //presentShowcaseView(1000); // one second delay
-
+        // teach user to add notebook
+        presentShowcaseView(1000);
 
         return rootView;
     }
@@ -186,7 +186,5 @@ public class NotebookFragment extends Fragment {
                 .singleUse(SHOWCASE_NOTEBOOK)
                 .show();
     }
-
-
 
 }

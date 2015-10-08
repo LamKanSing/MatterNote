@@ -87,7 +87,8 @@ public class NoteListFragment extends Fragment {
         mListView = (ListView)rootView.findViewById(R.id.listView);
         addNoteFab = (FloatingActionButton)rootView.findViewById(R.id.fabnotelist);
 
-        //presentShowcaseView(1000);
+        // teach user about addnotefab
+        presentShowcaseView(1000);
 
         // listener - list item is clicked
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -143,7 +144,6 @@ public class NoteListFragment extends Fragment {
                 new int[] { R.id.singlelinetextview, R.id.listtiemnoteid });
 
         mListView.setAdapter(adapter);
-
     }
 
     @Override
